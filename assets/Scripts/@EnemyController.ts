@@ -1,8 +1,9 @@
 import { _decorator, Component, Node, Prefab, instantiate, math, Vec3, Sprite, Color, Collider2D } from 'cc';
+import { GameModel } from './@GameModel';
 const { ccclass, property } = _decorator;
 
-@ccclass('Enemy')
-export class Enemy extends Component {
+@ccclass('@EnemyController')
+export class EnemyController extends Component {
 
     @property({
         type: Prefab
@@ -14,6 +15,11 @@ export class Enemy extends Component {
     })
     private enemiesNode: Node;
 
+    @property({
+        type: GameModel
+    })
+    private gameModel: GameModel;
+
     private arrPrefab: Node[] = [];
     private speedEnemy: number = 300;
     private tempPrefab: Vec3 = new Vec3();
@@ -23,8 +29,9 @@ export class Enemy extends Component {
     }
 
     protected initPrefab(): void {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             let element = instantiate(this.prefabEnemy);
+            element.getComponent(Collider2D).apply()
             this.enemiesNode.addChild(element);
             this.arrPrefab.push(element);
             this.randomPrefab();
@@ -32,25 +39,31 @@ export class Enemy extends Component {
     }
 
     protected randomPrefab(): void {
+        const position1: Vec3 = new Vec3(-50, 180);
+        const position2: Vec3 = new Vec3(50, 280);
+    
         for (let i = 0; i < this.arrPrefab.length; i++) {
-            const numX = math.randomRange(-150, 150);
-            const numY = math.randomRange(50, 100);
-            let node = this.arrPrefab[i];
-            node.position = new Vec3(numX, numY);
-            // node.getComponent(Collider2D).apply();
-            this.arrPrefab[i].setPosition(node.position);
+            const node = this.arrPrefab[i];
+            node.getComponent(Collider2D).apply()
             this.randomColor(node);
+            const position = i === 0 ? position1 : position2;
+            node.setPosition(position);
+            
         }
     }
-
+    
     protected randomColor(node: Node): void {
         const randomColor = Math.random() < 0.5 ? 'white' : 'black';
         let sprite = node.getComponent(Sprite);
 
         if (sprite) {
             if (randomColor === 'white') {
+                // console.log('1 enemy white')
+                this.gameModel.ContactWhite = true;
                 sprite.color = new Color(255, 255, 255);
             } else {
+                // console.log('enemy black')
+                this.gameModel.ContactWhite = false;
                 sprite.color = new Color(0, 0, 0);
             }
         }
@@ -61,9 +74,10 @@ export class Enemy extends Component {
             let element = this.arrPrefab[i];
             this.tempPrefab = element.position;
             this.tempPrefab.y -= this.speedEnemy * deltaTime;
+            // this.tempPrefab.x += this.speedEnemy * deltaTime * (i % 2 === 0 ? -1 : 1);
+            element.setPosition(this.tempPrefab.x, this.tempPrefab.y)
             element.getComponent(Collider2D).apply();
-            this.arrPrefab[i].setPosition(this.tempPrefab.x, this.tempPrefab.y)
-            if(this.tempPrefab.y < -550) {
+            if(this.tempPrefab.y < -400) {
                 this.randomPrefab();
             }
         }
