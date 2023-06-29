@@ -1,5 +1,9 @@
-import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director } from 'cc';
+import { Constants } from './Constants';
+import { GameParamater } from './GameParamater';
+import { AudioGame } from './@AudioGame';
+import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find } from 'cc';
 import { GameModel } from './@GameModel';
+import { ScoreGame } from './ScoreGame';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameController')
@@ -25,7 +29,15 @@ export class GameController extends Component {
     })
     private nodeEnemies: Node;
 
-    private pauseClicked: boolean = false;
+    @property({
+        type: ScoreGame
+    })
+    private scoreGame: ScoreGame;
+
+    @property({
+        type: AudioGame
+    })
+    private audioGame: AudioGame;
 
     private arrEnimies: Node[] = [];
     public get ArrEnimies(): Node[] {
@@ -34,9 +46,7 @@ export class GameController extends Component {
     public set ArrEnimies(value: Node[]) {
         this.arrEnimies = value;
     }
-    private switchColor: boolean = false;
-
-
+  
     protected onLoad(): void {
         this.initialListener();
         this.initPrefab();
@@ -52,40 +62,46 @@ export class GameController extends Component {
         const self = selfCollider.node.getComponent(Sprite).color.toString();
         const other = otherCollider.node.getComponent(Sprite).color.toString();
         if (self === other ){
-            //Win game
+            this.scoreGame.addScore();
+            if(localStorage.getItem('volume') === '1') {
+                this.audioGame.onAudioQueue(0); 
+            }
         }
         else {
-            
             this.overGame();
         }
     }
 
     protected initialListener(): void {
-        if(!this.pauseClicked) {
-            console.log('on')
             input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
-            input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        } else {
-            console.log('off')
-            input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
-            input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        }
-        
+            input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);  
     }
 
     protected onTouchStart(): void {
-        this.switchColor = true;
         this.square.getComponent(Sprite).color = Color.BLACK;
     }
 
     protected onTouchEnd(): void {
-        this.switchColor = false;
         this.square.getComponent(Sprite).color = Color.WHITE;
     }
 
     protected overGame(): void {
-        this.pauseClicked = true;
-        director.pause();
+        input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        if(localStorage.getItem('volume') === '1') {
+            this.audioGame.onAudioQueue(1); 
+        }
+
+
+        let node = find('GameParamater');
+        if(node === null) {
+            let node = new Node('GameParamater');
+            let param = node.addComponent(GameParamater);
+            param.IndexScore = this.scoreGame.CurrentScore;
+            director.addPersistRootNode(node);
+            director.loadScene(Constants.EntryScene);
+        }
+       
     }
 
     protected initPrefab(): void {
@@ -96,7 +112,6 @@ export class GameController extends Component {
             this.arrEnimies.push(element);
             this.randomPrefab(element);
         }
-
     }
 
     public randomPrefab(node: Node): void {
@@ -133,11 +148,6 @@ export class GameController extends Component {
                 sprite.color = new Color(0, 0, 0);
             }
         }
-    }
-
-
-    update(deltaTime: number) {
-
     }
 }
 
