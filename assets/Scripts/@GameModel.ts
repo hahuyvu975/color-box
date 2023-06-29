@@ -13,5 +13,7 @@ export class GameModel extends Component {
     public set ContactWhite(value: boolean) {
         this.contactWhite = value;
     }
+
+    
 }
 

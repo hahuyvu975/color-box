@@ -375,7 +375,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 210.083,
+      "y": 0,
       "z": 0
     },
     "_lrot": {
@@ -412,8 +412,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 50,
+      "height": 50
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -590,7 +590,7 @@
     "_group": 1,
     "_type": 0,
     "_allowSleep": false,
-    "_gravityScale": 1,
+    "_gravityScale": 0,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -946,6 +946,9 @@
     },
     "gameModel": {
       "__id__": 23
+    },
+    "gameCtrl": {
+      "__id__": 22
     },
     "_id": "feZLROmYBLHr5MPupqCOWc"
   },
