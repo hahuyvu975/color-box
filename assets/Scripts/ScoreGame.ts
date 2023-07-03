@@ -19,6 +19,7 @@ export class ScoreGame extends Component {
     public addScore(): void {
         this.currentScore++;
         this.labelScore.string = this.currentScore.toString();
+
         if (!localStorage.getItem('bestScore')) {
             localStorage.setItem('bestScore', this.currentScore.toString());
         }

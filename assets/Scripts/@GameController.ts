@@ -1,7 +1,7 @@
 import { Constants } from './Constants';
 import { GameParamater } from './GameParamater';
 import { AudioGame } from './@AudioGame';
-import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find } from 'cc';
+import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find, random } from 'cc';
 import { GameModel } from './@GameModel';
 import { ScoreGame } from './ScoreGame';
 const { ccclass, property } = _decorator;
@@ -40,13 +40,18 @@ export class GameController extends Component {
     private audioGame: AudioGame;
 
     private arrEnimies: Node[] = [];
+
     public get ArrEnimies(): Node[] {
         return this.arrEnimies;
     }
     public set ArrEnimies(value: Node[]) {
         this.arrEnimies = value;
     }
-  
+
+    private position1: Vec3 = new Vec3();
+
+    private randomY: number;
+
     protected onLoad(): void {
         this.initialListener();
         this.initPrefab();
@@ -61,20 +66,20 @@ export class GameController extends Component {
     protected onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact): void {
         const self = selfCollider.node.getComponent(Sprite).color.toString();
         const other = otherCollider.node.getComponent(Sprite).color.toString();
-        if (self === other ){
+        if (self === other) {
             this.scoreGame.addScore();
-            if(localStorage.getItem('volume') === '1') {
-                this.audioGame.onAudioQueue(0); 
+            if (localStorage.getItem('volume') === '1') {
+                this.audioGame.onAudioQueue(0);
             }
         }
         else {
-            this.overGame();
+            // this.overGame();
         }
     }
 
     protected initialListener(): void {
-            input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
-            input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);  
+        input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
 
     protected onTouchStart(): void {
@@ -88,52 +93,49 @@ export class GameController extends Component {
     protected overGame(): void {
         input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
         input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        if(localStorage.getItem('volume') === '1') {
-            this.audioGame.onAudioQueue(1); 
+        if (localStorage.getItem('volume') === '1') {
+            this.audioGame.onAudioQueue(1);
         }
 
-
         let node = find('GameParamater');
-        if(node === null) {
+        if (node === null) {
             let node = new Node('GameParamater');
             let param = node.addComponent(GameParamater);
             param.IndexScore = this.scoreGame.CurrentScore;
             director.addPersistRootNode(node);
             director.loadScene(Constants.EntryScene);
         }
-       
     }
 
-    protected initPrefab(): void {
-        for (let i = 0; i < 2; i++) {
-            let element = instantiate(this.prefabEnemy);
-            element.getComponent(Collider2D).apply()
-            this.nodeEnemies.addChild(element);
-            this.arrEnimies.push(element);
-            this.randomPrefab(element);
-        }
+    protected initPrefab(): void {  
+            let element1 = instantiate(this.prefabEnemy);
+            let element2 = instantiate(this.prefabEnemy);
+            element1.getComponent(Collider2D).apply();
+            element2.getComponent(Collider2D).apply();
+            this.nodeEnemies.addChild(element1);
+            this.nodeEnemies.addChild(element2);
+            this.arrEnimies.push(element1);
+            this.arrEnimies.push(element2);
+            this.randomPrefab1(element1);
+            this.randomPrefab2(element2); 
     }
 
-    public randomPrefab(node: Node): void {
-        const randomX1 = math.randomRange(-265, -315);
-        const randomY1 = math.randomRange(65, 115);
-        const randomX2 = math.randomRange(265, 315);
-        const randomY2 = math.randomRange(320, 400);
-
-        const position1: Vec3 = new Vec3(randomX1, randomY1);
-        const position2: Vec3 = new Vec3(randomX2, randomY2);
-
-        if (node === this.arrEnimies[0]) {
-            node.setPosition(position1);
-            node.getComponent(Collider2D).apply();
-            this.randomColor(node)
-        } else if (node === this.arrEnimies[1]) {
-            node.setPosition(position2);
-            node.getComponent(Collider2D).apply();
-            this.randomColor(node)
-        }
+    public randomPrefab1(node: Node): void {
+        this.randomY = math.randomRangeInt(150, 215);
+        this.position1 = new Vec3(this.randomPosX(), this.randomY);
+        node.setPosition(this.position1);
+        this.randomColor(node);
     }
 
+    public randomPrefab2(node: Node): void {
+        const spacingY = 150;
+        node.setPosition(this.randomPosX(), this.randomY + spacingY);
+        this.randomColor(node);
+    }
+    
+    private randomPosX(): number {
+         return Math.random() < 0.5 ? 265 : -265;
+    }
 
     protected randomColor(node: Node): void {
         const randomColor = Math.random() < 0.5 ? 'white' : 'black';

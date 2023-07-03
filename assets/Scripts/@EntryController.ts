@@ -84,9 +84,9 @@ export class EntryController extends Component {
 
     protected onClickSound(): void {
         if(!this.onClicked) {
-            if(localStorage.getItem('volume') === '1') {
-                this.audioEntry.onAudioQueue(0);
-            }
+            // if(localStorage.getItem('volume') === '1') {
+            //     this.audioEntry.onAudioQueue(0);
+            // }
             localStorage.setItem('volume', '0');
             this.audioEntry.soundTrack(0);
             this.btnTurnOn.active = false;
