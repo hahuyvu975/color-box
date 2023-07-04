@@ -40,6 +40,7 @@ export class EntryController extends Component {
     protected onLoad(): void {
         if(!localStorage.getItem('volume')) {        
             localStorage.setItem('volume', '1')
+            this.audioEntry.soundTrack(1);
         }
         if (localStorage.getItem('volume') === '1') {
             this.btnTurnOn.active = true;
