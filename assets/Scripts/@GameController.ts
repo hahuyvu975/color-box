@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find, random } from 'cc';
+import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find, random, Animation } from 'cc';
 
 import { Constants } from './Constants';
 import { GameParamater } from './GameParamater';
@@ -51,24 +51,27 @@ export class GameController extends Component {
         this.arrEnemies = value;
     }
 
+    private anim: Animation
+
     protected onLoad(): void {
+        
         this.initialListener();
         this.initPrefab();
     }
     protected start(): void {
+        this.anim = this.square.getComponent(Animation)
         const collider = this.square.getComponent(Collider2D);
         if (collider) {
             collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
         }
     }
 
-    
-
     protected onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact): void {
         const self = selfCollider.node.getComponent(Sprite).color.toString();
         const other = otherCollider.node.getComponent(Sprite).color.toString();
         if (self === other) {
             this.scoreGame.addScore();
+            this.anim.play();
             if (localStorage.getItem('volume') === '1') {
                 this.audioGame.onAudioQueue(0);
             }
@@ -161,6 +164,7 @@ export class GameController extends Component {
     }
 
     protected update(): void {
+        console.log(this.square.scale)
         for (let i = 0; i < 2; i++) {
             this.arrAnim[i].setPosition(this.arrEnemies[i].position);
             this.arrAnim[i].setRotation(this.arrEnemies[i].rotation);

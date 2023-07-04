@@ -38,9 +38,12 @@ export class EntryController extends Component {
     
 
     protected onLoad(): void {
+        if(!localStorage.getItem('bestScore')) {
+            localStorage.setItem('bestScore', '0');
+        }
+
         if(!localStorage.getItem('volume')) {        
             localStorage.setItem('volume', '1')
-            this.audioEntry.soundTrack(1);
         }
         if (localStorage.getItem('volume') === '1') {
             this.btnTurnOn.active = true;
@@ -85,9 +88,9 @@ export class EntryController extends Component {
 
     protected onClickSound(): void {
         if(!this.onClicked) {
-            // if(localStorage.getItem('volume') === '1') {
-            //     this.audioEntry.onAudioQueue(0);
-            // }
+            if(localStorage.getItem('volume') === '1') {
+                this.audioEntry.onAudioQueue(0);
+            }
             localStorage.setItem('volume', '0');
             this.audioEntry.soundTrack(0);
             this.btnTurnOn.active = false;
