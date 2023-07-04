@@ -1,9 +1,10 @@
+import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find, random } from 'cc';
+
 import { Constants } from './Constants';
 import { GameParamater } from './GameParamater';
 import { AudioGame } from './@AudioGame';
-import { _decorator, Component, Node, input, Input, Sprite, Color, Prefab, Collider2D, Contact2DType, IPhysics2DContact, instantiate, Vec3, math, director, AudioSource, find, random } from 'cc';
-import { GameModel } from './@GameModel';
 import { ScoreGame } from './ScoreGame';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('GameController')
@@ -13,11 +14,6 @@ export class GameController extends Component {
         type: Node
     })
     private square: Node;
-
-    @property({
-        type: GameModel
-    })
-    private gameModel: GameModel;
 
     @property({
         type: Prefab
@@ -39,18 +35,21 @@ export class GameController extends Component {
     })
     private audioGame: AudioGame;
 
-    private arrEnimies: Node[] = [];
+    @property({
+        type: Prefab
+    })
+    private prefabAnimWhite: Prefab;
 
-    public get ArrEnimies(): Node[] {
-        return this.arrEnimies;
+    private arrAnim: Node[] = [];
+
+    private arrEnemies: Node[] = [];
+
+    public get ArrEnemies(): Node[] {
+        return this.arrEnemies;
     }
-    public set ArrEnimies(value: Node[]) {
-        this.arrEnimies = value;
+    public set ArrEnemies(value: Node[]) {
+        this.arrEnemies = value;
     }
-
-    private position1: Vec3 = new Vec3();
-
-    private randomY: number;
 
     protected onLoad(): void {
         this.initialListener();
@@ -63,6 +62,8 @@ export class GameController extends Component {
         }
     }
 
+    
+
     protected onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact): void {
         const self = selfCollider.node.getComponent(Sprite).color.toString();
         const other = otherCollider.node.getComponent(Sprite).color.toString();
@@ -73,7 +74,7 @@ export class GameController extends Component {
             }
         }
         else {
-            // this.overGame();
+            this.overGame();
         }
     }
 
@@ -107,48 +108,62 @@ export class GameController extends Component {
         }
     }
 
-    protected initPrefab(): void {  
-            let element1 = instantiate(this.prefabEnemy);
-            let element2 = instantiate(this.prefabEnemy);
-            element1.getComponent(Collider2D).apply();
-            element2.getComponent(Collider2D).apply();
-            this.nodeEnemies.addChild(element1);
-            this.nodeEnemies.addChild(element2);
-            this.arrEnimies.push(element1);
-            this.arrEnimies.push(element2);
-            this.randomPrefab1(element1);
-            this.randomPrefab2(element2); 
-    }
-
-    public randomPrefab1(node: Node): void {
-        this.randomY = math.randomRangeInt(150, 215);
-        this.position1 = new Vec3(this.randomPosX(), this.randomY);
-        node.setPosition(this.position1);
-        this.randomColor(node);
-    }
-
-    public randomPrefab2(node: Node): void {
-        const spacingY = 150;
-        node.setPosition(this.randomPosX(), this.randomY + spacingY);
-        this.randomColor(node);
-    }
-    
-    private randomPosX(): number {
-         return Math.random() < 0.5 ? 265 : -265;
-    }
-
-    protected randomColor(node: Node): void {
+    private setEnemyColor(enemy: Node, index: number): void {
         const randomColor = Math.random() < 0.5 ? 'white' : 'black';
-        let sprite = node.getComponent(Sprite);
+        const sprite = enemy.getComponent(Sprite);
 
         if (sprite) {
-            if (randomColor === 'white') {
-                // console.log('1 enemy white')
-                sprite.color = new Color(255, 255, 255);
-            } else {
-                // console.log('enemy black')
-                sprite.color = new Color(0, 0, 0);
-            }
+            sprite.color = randomColor === 'white' ? new Color(255, 255, 255) : new Color(0, 0, 0);
+        }
+
+        const nodeAnim = this.arrAnim[index];
+
+        for (let i = 0; i < nodeAnim.children.length; i++) {
+            nodeAnim.children[i].getComponent(Sprite).color = randomColor === 'white' ? new Color(255, 255, 255) : new Color(0, 0, 0);
+        }
+
+        // nodeAnim.children.map((child) => {
+        //     child.getComponent(Sprite).color = randomColor === 'white' ? new Color(255, 255, 255) : new Color(0, 0, 0);
+        // })
+    }
+
+    public randomPrefab(node: Node, index: number): void {
+        const spacingY = 150;
+        let randomY = math.randomRangeInt(200, 300);
+        let randomX = math.randomRangeInt(180, 100);
+        let posX = 0;
+        let rotation = 0;
+        if (randomY >= 250) {
+            posX = math.random() < 0.5 ? -randomX : randomX;
+            rotation = posX === randomX ? -10 : 10;
+        } else {
+            posX = math.random() < 0.5 ? -280 : 280;
+            rotation = posX === 280 ? -25 : 25;
+        }
+
+        node.setRotationFromEuler(0, 0, rotation);
+        node.setPosition(posX, randomY + spacingY);
+        this.setEnemyColor(node, index);
+    }
+
+
+    protected initPrefab(): void {
+        for (let i = 0; i < 2; i++) {
+            const element = instantiate(this.prefabEnemy);
+            const anim = instantiate(this.prefabAnimWhite);
+            this.arrAnim.push(anim);
+            element.getComponent(Collider2D).apply();
+            this.nodeEnemies.addChild(element);
+            this.nodeEnemies.addChild(anim);
+            this.arrEnemies.push(element);
+            this.randomPrefab(element, i);
+        }
+    }
+
+    protected update(): void {
+        for (let i = 0; i < 2; i++) {
+            this.arrAnim[i].setPosition(this.arrEnemies[i].position);
+            this.arrAnim[i].setRotation(this.arrEnemies[i].rotation);
         }
     }
 }

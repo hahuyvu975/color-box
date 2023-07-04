@@ -14,6 +14,7 @@ export class GameModel extends Component {
         this.contactWhite = value;
     }
 
+
     
 }
 

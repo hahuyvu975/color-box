@@ -879,16 +879,16 @@
         "__id__": 28
       },
       {
-        "__id__": 31
+        "__id__": 34
       },
       {
         "__id__": 36
       },
       {
-        "__id__": 33
+        "__id__": 31
       },
       {
-        "__id__": 35
+        "__id__": 33
       }
     ],
     "_active": true,
@@ -1019,9 +1019,6 @@
     "square": {
       "__id__": 11
     },
-    "gameModel": {
-      "__id__": 30
-    },
     "prefabEnemy": {
       "__uuid__": "4001f2af-842b-426b-98ed-af404168299f",
       "__expectedType__": "cc.Prefab"
@@ -1033,12 +1030,16 @@
       "__id__": 22
     },
     "audioGame": {
-      "__id__": 32
+      "__id__": 30
+    },
+    "prefabAnimWhite": {
+      "__uuid__": "082a0054-55d6-47e9-a549-d46abaf62c16",
+      "__expectedType__": "cc.Prefab"
     },
     "_id": "eeBBv0nPNHua3DHejIROOJ"
   },
   {
-    "__type__": "1173e4iLfNDNZmzav5sLcA0",
+    "__type__": "25f0aZ9f+pJ6rO/XEBB6DGo",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -1046,12 +1047,24 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "contactWhite": false,
-    "_id": "95cbkqxpdJi6LCl+wF/CqQ"
+    "clips": [
+      {
+        "__uuid__": "a62e2e95-7bc5-4ce6-81a7-f5266fb3f4c4",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "82719686-68c4-4d97-af78-5fd80d8e94ec",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "audioSource": {
+      "__id__": 32
+    },
+    "_id": "0beXOf36ROuoNUVYnmHHf+"
   },
   {
     "__type__": "cc.Node",
-    "_name": "@GameModel",
+    "_name": "@AudioController",
     "_objFlags": 0,
     "_parent": {
       "__id__": 26
@@ -1091,74 +1104,6 @@
       "y": 0,
       "z": 0
     },
-    "_id": "cbhy+T8ldLc7bcM7D5Xgr4"
-  },
-  {
-    "__type__": "25f0aZ9f+pJ6rO/XEBB6DGo",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 33
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "clips": [
-      {
-        "__uuid__": "a62e2e95-7bc5-4ce6-81a7-f5266fb3f4c4",
-        "__expectedType__": "cc.AudioClip"
-      },
-      {
-        "__uuid__": "82719686-68c4-4d97-af78-5fd80d8e94ec",
-        "__expectedType__": "cc.AudioClip"
-      }
-    ],
-    "audioSource": {
-      "__id__": 34
-    },
-    "_id": "0beXOf36ROuoNUVYnmHHf+"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "@AudioController",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 26
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 32
-      }
-    ],
-    "_prefab": null,
-    "_lpos": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_lrot": {
-      "__type__": "cc.Quat",
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "w": 1
-    },
-    "_lscale": {
-      "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
-      "z": 1
-    },
-    "_mobility": 0,
-    "_layer": 1073741824,
-    "_euler": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
     "_id": "cfS49mPVJFVr324m6+uCwm"
   },
   {
@@ -1166,7 +1111,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 35
+      "__id__": 33
     },
     "_enabled": true,
     "__prefab": null,
@@ -1187,13 +1132,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 34
+        "__id__": 32
       }
     ],
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 0,
+      "x": 57.5,
       "y": 0,
       "z": 0
     },
@@ -1219,6 +1164,62 @@
       "z": 0
     },
     "_id": "6bQkwACsBIGY7jcG60XHAW"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "@GameModel",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 26
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 35
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 1073741824,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "cbhy+T8ldLc7bcM7D5Xgr4"
+  },
+  {
+    "__type__": "1173e4iLfNDNZmzav5sLcA0",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 34
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "contactWhite": false,
+    "_id": "95cbkqxpdJi6LCl+wF/CqQ"
   },
   {
     "__type__": "cc.Node",
